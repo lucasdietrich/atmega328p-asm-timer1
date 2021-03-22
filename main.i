@@ -44,7 +44,7 @@
 __vector_13:
     call ResetTimer1
 
-    # toggle ledt
+    ; toggle ledt
     in r17, ((((0x05) + 0x20)) - 0x20)
  eor r17, r16
  out ((((0x05) + 0x20)) - 0x20), r17

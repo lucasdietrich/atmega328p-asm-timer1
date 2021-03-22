@@ -12,7 +12,7 @@
 TIMER1_OVF_vect:
     call ResetTimer1
 
-    # toggle ledt
+    ; toggle ledt
     in r17, _SFR_IO_ADDR(PORTB)
 	eor r17, r16
 	out _SFR_IO_ADDR(PORTB), r17	
