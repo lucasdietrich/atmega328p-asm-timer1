@@ -34,43 +34,55 @@
 
 
 
+
+
+
+
 .global main
+.global __vector_13
 
 __vector_13:
-    ldi r26, 0xc2
-    ldi r27, 0xf6
-    sts (0x85), r26
-    sts (0x84), r27
+    call ResetTimer1
 
-    in ((((0x05) + 0x20)) - 0x20), r17
+    # toggle ledt
+    in r17, ((((0x05) + 0x20)) - 0x20)
  eor r17, r16
  out ((((0x05) + 0x20)) - 0x20), r17
 
-    reti
-
+    reti ; return from interrupt (I flag set)
 
 ResetTimer1:
     ldi r26, 0xc2
     ldi r27, 0xf6
     sts (0x85), r26
     sts (0x84), r27
-    jmp PC
-# 35 "src/main.asm"
+
+    ret ; return from routine (I flag not set)
+
+StartTimer1:
+    ldi r28, 1
+    sts (0x6F), r28 ; (0x6F) is not in/out so sbi/cbi does not work (need to do bitset manually)
+    ; maybe BST and BLD may be usefull
+    ret ; return from routine (I flag not set)
+
+StopTimer1:
+    ldi r28, 0
+    sts (0x6F), r28
+    ret ; return from routine (I flag not set)
+
 main:
     ldi r16, 0x20
-    out ((((0x0A) + 0x20)) - 0x20), r16
-    out ((((0x05) + 0x20)) - 0x20), r16
+    sbi ((((0x04) + 0x20)) - 0x20), 5
+    sbi ((((0x05) + 0x20)) - 0x20), 5
 
-    sts (0x81), 0b00000101
-    sts (0x80), 0
+    ldi r18, 0b00000101
+    ldi r19, 0
+    sts (0x81), r18
+    sts (0x80), r19
 
-    ldi r26, 0xc2
-    ldi r27, 0xf6
-    sts (0x85), r26
-    sts (0x84), r27
+    call ResetTimer1
 
-
-    sbi (((0x6F)) - 0x20), 0
+    call StartTimer1
 
     sei
 
