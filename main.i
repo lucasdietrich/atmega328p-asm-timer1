@@ -44,12 +44,12 @@
 __vector_13:
     call ResetTimer1
 
-    ; toggle ledt
+
     in r17, ((((0x05) + 0x20)) - 0x20)
  eor r17, r16
  out ((((0x05) + 0x20)) - 0x20), r17
 
-    reti ; return from interrupt (I flag set)
+    reti ; return from interrupt (I flag set - disable interrupt)
 
 ResetTimer1:
     ldi r26, 0xc2
@@ -62,7 +62,8 @@ ResetTimer1:
 StartTimer1:
     ldi r28, 1
     sts (0x6F), r28 ; (0x6F) is not in/out so sbi/cbi does not work (need to do bitset manually)
-    ; maybe BST and BLD may be usefull
+                        ; TODO : maybe BST and BLD may be usefull
+
     ret ; return from routine (I flag not set)
 
 StopTimer1:
@@ -72,17 +73,18 @@ StopTimer1:
 
 main:
     ldi r16, 0x20
-    sbi ((((0x04) + 0x20)) - 0x20), 5
-    sbi ((((0x05) + 0x20)) - 0x20), 5
+    sbi ((((0x04) + 0x20)) - 0x20), 5 ; configure 5 as output
+    sbi ((((0x05) + 0x20)) - 0x20), 5 ; set 5 output
 
     ldi r18, 0b00000101
+    sts (0x81), r18 ; configure timer1 clock select 0:2
+
     ldi r19, 0
-    sts (0x81), r18
-    sts (0x80), r19
+    sts (0x80), r19 ; configure operation mode
 
-    call ResetTimer1
+    call ResetTimer1 ; reset/set timer count (use registers r26, r27)
 
-    call StartTimer1
+    call StartTimer1 ; start timer (use register r28)
 
     sei
 
