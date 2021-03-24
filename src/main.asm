@@ -10,6 +10,8 @@
 // in this script we make sure that every register is used only one time 
 // because with dont push/pop registers
 
+// we assume TIMER1_OVF_vect is the only function executed (no need to pusH/pop register to/from stack)
+
 // export functions
 .global main
 .global TIMER1_OVF_vect // if __vector_13 does not appear in __vectors table, declare assoc *_OVF_vect .global
